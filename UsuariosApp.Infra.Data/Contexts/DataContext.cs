@@ -23,6 +23,7 @@ namespace UsuariosApp.Infra.Data.Contexts
         {
             //Adicionar as classes de mapeamento
             modelBuilder.ApplyConfiguration(new UsuarioMap());
+            modelBuilder.ApplyConfiguration(new PerfilMap());
         }
     }
 }
