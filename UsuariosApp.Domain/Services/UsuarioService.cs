@@ -19,6 +19,29 @@ namespace UsuariosApp.Domain.Services
     /// </summary>
     public class UsuarioService(IUsuarioRepository usuarioRepository, IPerfilRepository perfilRepository) : IUsuarioService
     {
+        public AutenticarResponse Autenticar(AutenticarRequest request)
+        {
+            //Buscar o usuário no banco de dados baseado no email e na senha.
+            var usuario = usuarioRepository.Get(request.Email, CryptoHelper.ToSha256(request.Senha));
+
+            //Verificar se o usuário não foi encontrado
+            if (usuario == null)
+            {
+                throw new ApplicationException("Acesso negado. Usuário inválido.");
+            }
+
+            //Retornar os dados do usuário autenticado
+            return new AutenticarResponse(
+                usuario.Id,                    //Id do usuário
+                usuario.Nome,                  //Nome do usuário
+                usuario.Email,                 //Email do usuário
+                usuario.Perfil?.Nome,          //Nome do perfil do usuário
+                DateTime.Now,                  //Data e hora do acesso
+                DateTime.Now.AddHours(1),      //Data e hora de expiração do token
+                "<<TOKEN>>"                    //Token JWT (vazio por enquanto)
+                );
+        }
+
         public CriarContaResponse CriarConta(CriarContaRequest request)
         {
             //Capturar os dados recebidos (request)
